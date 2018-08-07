@@ -1,6 +1,7 @@
 package ee.bauhof.toadisainer;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,7 +13,7 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class ChooseProdTypeMenu {
+public class Visualizer {
     private WebDriver driver;
     private String baseUrl;
     private boolean acceptNextAlert = true;
@@ -21,8 +22,8 @@ public class ChooseProdTypeMenu {
     @BeforeClass(alwaysRun = true)
     public void setUp() throws Exception {
         System.setProperty("webdriver.gecko.driver", "d:/distribs/selenium/geckodriver.exe");
-        driver = new FirefoxDriver();
-        // driver = new ChromeDriver();
+//        driver = new FirefoxDriver();
+         driver = new ChromeDriver();
         baseUrl = "https://toadisainer.bauhof.ee";
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
@@ -241,10 +242,69 @@ public class ChooseProdTypeMenu {
                 // click | xpath=(//input[@type='text'])[2] |
                 driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[1]/div[1]/div/div[1]/div[2]/div/button[1]")).click();
                 Thread.sleep(5000);
-    Assert.assertTrue(isElementPresent(By.cssSelector("//*[@id=\"title-menu\"]/div[@class=\"product-container\"]//div[@class=\"item\"]/div[@class=\"col1\" and strong[contains(.,'KER')]]/strong")));
+                //        Assert.assertTrue(isElementPresent(By.cssSelector("//*[@id=\"title-menu\"]/div[@class=\"product-container\"]//div[@class=\"item\"]/div[@class=\"col1\" and strong[contains(.,'KER')]]/strong")));
+//                driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[1]/ul/li[3]/a")).click();
+                Assert.assertTrue(isElementPresent(By.xpath("//*[@id='title-menu']/div[@class='product-container']//div[@class='item' and div[@class='col1']/strong[contains(.,'KER')]]/div[@class='col1']/span[contains(@class,'size')]")));
     }
+    @Test
+    public void testRender() throws Exception {
+        // open | / |
+        driver.get(baseUrl);
+        // click | css=div.navbar-item.lightblue > h3.ng-binding |
+        driver.findElement(By.cssSelector("div.navbar-item.lightblue > h3.ng-binding")).click();
+        driver.findElement(By.xpath("//div[@id='design-menu-navbar']/div/div[2]/div")).click();
+        driver.findElement(By.xpath("//div[@id='design-menu-navbar']/div/div[5]/div")).click();
+        WebDriverWait wait = new WebDriverWait(driver, 7);
+        WebElement canvasElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("mainCanvas")));
+        Thread.sleep(5000);
 
+        // теперь можно кликать
+        Actions actions = new Actions(driver);
+        actions.moveToElement(canvasElement).click().build().perform();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.design-visualiser.ng-scope")));
+        driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[1]/div[1]/div/div[1]/div[3]/div[1]/div/div[1]")).click();
+        Thread.sleep(5000);
+        Assert.assertTrue(isElementPresent(By.xpath("/html/body/div[1]/div[1]/span/div[1]/div[1]/div[2]/div[2]/img")));
+    }
+@Test
+public void testAddToCalc() throws Exception {
+    // open | / |
+    driver.get(baseUrl);
+    // click | css=div.navbar-item.lightblue > h3.ng-binding |
+    driver.findElement(By.cssSelector("div.navbar-item.lightblue > h3.ng-binding")).click();
+    driver.findElement(By.xpath("//div[@id='design-menu-navbar']/div/div[2]/div")).click();
+    driver.findElement(By.xpath("//div[@id='design-menu-navbar']/div/div[5]/div")).click();
+    WebDriverWait wait = new WebDriverWait(driver, 7);
+    WebElement canvasElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("mainCanvas")));
+    Thread.sleep(5000);
 
+    // теперь можно кликать
+    Actions actions = new Actions(driver);
+    actions.moveToElement(canvasElement).click().build().perform();
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.design-visualiser.ng-scope")));
+
+    // assertText | //div[@id='title-menu']/div[3]/div[3]/div/div/strong | KERAAMILINE DEKOOR KWADRO NEA LISC B 25X40CM
+    Assert.assertEquals(driver.findElement(By.xpath("//div[@id='title-menu']/div[3]/div[3]/div/div/strong")).getText(), "KERAAMILINE DEKOOR KWADRO NEA LISC B 25X40CM");
+    // click | //div[@id='title-menu']/div[3]/div[3]/div/div[2]/button |
+    driver.findElement(By.xpath("//div[@id='title-menu']/div[3]/div[3]/div/div[2]/button")).click();
+    // assertText | //div[@id='title-menu']/div[3]/div/div/div[2]/button | EEMALDA KALKULAATORIST
+    Assert.assertEquals(driver.findElement(By.xpath("//div[@id='title-menu']/div[3]/div/div/div[2]/button")).getText(), "EEMALDA KALKULAATORIST");
+    // click | css=#desing-visualizer-tab-id > h3.ng-binding |
+    driver.findElement(By.cssSelector("#desing-visualizer-tab-id > h3.ng-binding")).click();
+    // assertText | css=div.room-head > h4.ng-binding | Vali sobiv ruumi kuju
+    Assert.assertEquals(driver.findElement(By.cssSelector("div.room-head > h4.ng-binding")).getText(), "VALI SOBIV RUUMI KUJU");
+    // assertText | //div[@id='title-menu']/div[3]/div/div/div/strong | KERAAMILINE DEKOOR KWADRO NEA LISC B 25X40CM
+    driver.findElement(By.xpath("//div[@id='title-menu']/div[3]/div/div/div/strong")).getText();
+    // click | id=Layer_1 |
+    driver.findElement(By.id("Layer_1")).click();
+    // click | //ul[@id='slide-room']/li[3]/a/i |
+    driver.findElement(By.xpath("//ul[@id='slide-room']/li[3]/a/i")).click();
+    // click | //ul[@id='slide-room']/li[3]/div/ul/li/a/i |
+    driver.findElement(By.xpath("//ul[@id='slide-room']/li[3]/div/ul/li/a/i")).click();
+    // assertText | css=div.calculate-wrapper > div.product-container > div.products.ng-scope > div.item > div.col1 > strong.ng-binding | KERAAMILINE DEKOOR KWADRO NEA LISC B 25X40CM
+    Assert.assertEquals(driver.findElement(By.cssSelector("div.calculate-wrapper > div.product-container > div.products.ng-scope > div.item > div.col1 > strong.ng-binding")).getText(), "KERAAMILINE DEKOOR KWADRO NEA LISC B 25X40CM");
+
+}
 
 
         @AfterClass(alwaysRun = true)

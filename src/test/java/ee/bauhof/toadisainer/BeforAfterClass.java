@@ -18,11 +18,11 @@ import java.util.concurrent.TimeUnit;
         public void setUp(String browser) throws Exception {
             if (browser.equals("chrome")) {
                 System.setProperty("webdriver.chrome.driver", "C:/Program Files/Selenium/chromedriver.exe");
-                driver = new ChromeDriver();
+                WebDriver driver = new ChromeDriver();
             }
             else if (browser.equals("firefox")) {
                 System.setProperty("webdriver.gecko.driver", "C:/Program Files/Selenium/geckodriver.exe");
-                driver = new FirefoxDriver();
+                WebDriver driver = new FirefoxDriver();
             }
             baseUrl = "http://toadisainer.bauhof.ee";
             driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
